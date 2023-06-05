@@ -41,6 +41,7 @@ class Tag(models.Model):
         blank=False,
     )
     slug = models.CharField(
+        max_length=200,
         verbose_name='Слаг тэга',
         unique=True,
         blank=False,
@@ -109,11 +110,13 @@ class AmountIngredient(models.Model):
         Recipe,
         verbose_name='Рецепт',
         related_name='recipes',
+        on_delete=models.CASCADE,
     )
     ingredient = models.ForeignKey(
         Ingredient,
         verbose_name='Ингредиент',
         related_name='ingredients',
+        on_delete=models.CASCADE,        
     )
     amount = models.PositiveIntegerField(
         default=1,
