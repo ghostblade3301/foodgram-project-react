@@ -39,6 +39,7 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static_dir:/etc/nginx/html/static/
       - media_dir:/etc/nginx/html/media/
+      
     depends_on:
     - backend
     - frontend
