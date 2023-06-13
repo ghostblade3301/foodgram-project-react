@@ -17,7 +17,7 @@ services:
     build: ../backend/
     env_file: .env
     volumes:
-      - static_dir:/app/static
+      - static_dir:/app/collected_static
       - media_dir:/app/media
     ports:
       - "8000:8000"
