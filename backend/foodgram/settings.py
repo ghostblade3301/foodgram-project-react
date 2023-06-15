@@ -1,5 +1,4 @@
 import os
-##########
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -126,33 +125,30 @@ STATIC_ROOT = BASE_DIR / 'collected_static'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.AllowAny',
+#     ],
 
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
-}
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.TokenAuthentication',
+#     ]
+# }
 
-DJOSER = {
-    'LOGIN_FIELD': 'email',
-    'HIDE_USERS': False,
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-    },
-    'PERMISSIONS': {
-        'user_list': ['rest_framework.permissions.AllowAny'],
-        'user': ['rest_framework.permissions.IsAuthenticated']
-    }
-}
+# DJOSER = {
+#     'LOGIN_FIELD': 'email',
+#     'HIDE_USERS': False,
+#     'SERIALIZERS': {
+#         'user_create': 'api.serializers.CustomUserCreateSerializer',
+#         'current_user': 'api.serializers.CustomUserSerializer',
+#         'user': 'api.serializers.CustomUserSerializer',
+#     },
+#     'PERMISSIONS': {
+#         'user_list': ['rest_framework.permissions.AllowAny'],
+#         'user': ['rest_framework.permissions.IsAuthenticated']
+#     }
+# }
