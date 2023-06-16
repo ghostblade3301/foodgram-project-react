@@ -1,6 +1,5 @@
 from django.urls import include, path
-from rest_framework.routers import DefaultRouter
-from .views import RecipeAPIView
+from .views import RecipeAPIView, UserAPIView
 
 
 app_name = 'api'
@@ -9,5 +8,6 @@ app_name = 'api'
 # router.register('recipes', RecipeAPIView, basename='recipes')
 
 urlpatterns = [
-    path('', RecipeAPIView.as_view()),
+    path('recipes/', RecipeAPIView.as_view()),
+    path('users/', UserAPIView.as_view()),
 ]

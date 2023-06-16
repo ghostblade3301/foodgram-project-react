@@ -6,10 +6,17 @@ from recipes.models import (Favorite,
                             ShoppingCart,
                             Tag,
                             )
+from users.models import User
 from rest_framework import generics
-from .serializers import RecipeSerializer
+from .serializers import RecipeSerializer, UserSerializer
 
 
 class RecipeAPIView(generics.ListAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+
+class UserAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    count = User.objects.count()
+    serializer_class = UserSerializer
