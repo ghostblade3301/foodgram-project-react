@@ -1,5 +1,11 @@
 version: '3.8'
 name: foodgram
+
+volumes:
+  static_dir:
+  media_dir:
+  postgres_data:
+
 services:
   db:
     image: postgres:13.10
@@ -58,7 +64,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-volumes:
-  static_dir:
-  media_dir:
-  postgres_data:

@@ -1,5 +1,5 @@
-from django.urls import include, path
-from .views import RecipeAPIView, UserAPIView
+from django.urls import path
+from .views import RecipeAPIView  # , UserAPIView
 
 
 app_name = 'api'
@@ -9,5 +9,5 @@ app_name = 'api'
 
 urlpatterns = [
     path('recipes/', RecipeAPIView.as_view()),
-    path('users/', UserAPIView.as_view()),
+# path('users/', UserAPIView.as_view()),
 ]
