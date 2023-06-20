@@ -9,5 +9,6 @@ app_name = 'api'
 
 urlpatterns = [
     path('recipes/', RecipeAPIView.as_view()),
+    path('recipes/<int:pk>/', RecipeAPIView.as_view()),
 # path('users/', UserAPIView.as_view()),
 ]

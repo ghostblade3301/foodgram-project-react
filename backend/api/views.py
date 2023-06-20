@@ -22,10 +22,31 @@ class RecipeAPIView(APIView):
     def post(self, request):
         serializer = RecipeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        recipe_new = Recipe.objects.create(
-            name=request.data['name'],
-            text=request.data['text'],
-            cooking_time=request.data['cooking_time'],
-            author_id=request.data['author_id']
-        )
-        return Response({'post': RecipeSerializer(recipe_new).data})
+        serializer.save()
+        return Response({'post': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Method PUT not allowed'})
+
+        try:
+            instance = Recipe.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Object does not exists'})
+
+        serializer = RecipeSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'post': serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Method PUT not allowed'})
+        try:
+            instance = Recipe.objects.get(pk=pk)
+            instance.delete()
+        except:
+            return Response({'error': "Object does not exists"})
+        return Response({'recipe': 'post ' + str(pk) + ' deleted'})
