@@ -1,52 +1,24 @@
-from django.forms import model_to_dict
-from recipes.models import Recipe
-from rest_framework.views import APIView
+from recipes.models import Recipe, Tag
+# from users.models import User
+from .serializers import RecipeSerializer  # , UserSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from .serializers import RecipeSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 
-# class RecipeAPIView(generics.ListAPIView):
-#     queryset = Recipe.objects.all()
-#     serializer_class = RecipeSerializer
+class RecipeViewSet(ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
 
+    @action(methods=['get'], detail=True)
+    def tag(self, request, pk=None):
+        tag = Tag.objects.get(pk=pk)
+        return Response({'tag': tag.name})
 
-# class UserAPIView(generics.ListAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
+    @action(methods=['get'], detail=False)
+    def tags(self, request):
+        tags = Tag.objects.all()
+        return Response({'tags': [tag.name for tag in tags]})
 
-class RecipeAPIView(APIView):
-    def get(self, request):
-        w = Recipe.objects.all()
-        return Response({'recipes': RecipeSerializer(w, many=True).data})
-
-    def post(self, request):
-        serializer = RecipeSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'post': serializer.data})
-
-    def put(self, request, *args, **kwargs):
-        pk = kwargs.get('pk', None)
-        if not pk:
-            return Response({'error': 'Method PUT not allowed'})
-
-        try:
-            instance = Recipe.objects.get(pk=pk)
-        except:
-            return Response({'error': 'Object does not exists'})
-
-        serializer = RecipeSerializer(data=request.data, instance=instance)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'post': serializer.data})
-
-    def delete(self, request, *args, **kwargs):
-        pk = kwargs.get('pk', None)
-        if not pk:
-            return Response({'error': 'Method PUT not allowed'})
-        try:
-            instance = Recipe.objects.get(pk=pk)
-            instance.delete()
-        except:
-            return Response({'error': "Object does not exists"})
-        return Response({'recipe': 'post ' + str(pk) + ' deleted'})
