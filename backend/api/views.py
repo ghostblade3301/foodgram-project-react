@@ -21,4 +21,3 @@ class RecipeViewSet(ModelViewSet):
     def tags(self, request):
         tags = Tag.objects.all()
         return Response({'tags': [tag.name for tag in tags]})
-
