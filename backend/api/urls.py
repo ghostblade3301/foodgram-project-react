@@ -1,5 +1,5 @@
-from django.urls import path, include
-from .views import RecipeViewSet
+from django.urls import path, include, re_path
+from .views import RecipeViewSet, UserViewSet, TagViewSet, IngredientViewSet
 from rest_framework import routers
 # from api.views import (
 #     RecipeAPIList,
@@ -12,15 +12,17 @@ from rest_framework import routers
 app_name = 'api'
 
 router = routers.DefaultRouter()
+router.register(r'tags', TagViewSet)
 router.register(r'recipes', RecipeViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'ingredients', IngredientViewSet)
+
 
 # router = DefaultRouter()
 # router.register('recipes', RecipeAPIView, basename='recipes')
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('recipes/', RecipeViewSet.as_view({'get': 'list'})),
-    # path('recipes/<int:pk>/', RecipeViewSet.as_view({'put': 'update'})),
-    # path('users/', UserAPIList.as_view()),
-    # path('recipe_detail/<int:pk>/', RecipeViewSet.as_view()),
+    path('auth/', include('djoser.urls')),
+    re_path(r'auth/', include('djoser.urls.authtoken'))
 ]
