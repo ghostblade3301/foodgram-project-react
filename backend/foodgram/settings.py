@@ -1,7 +1,7 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
+from dotenv import load_dotenv
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,8 +34,8 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'rest_framework',
     'rest_framework.authtoken',
-    'django_filters',
     'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -130,25 +130,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
+    # Фильтр по умолчанию для DRF
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+    # Права доступа по умолчанию для DRF
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-
+    # Классы аутентификации по умолчанию для DRF
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
 
-# DJOSER = {
-#     'LOGIN_FIELD': 'email',
-#     'HIDE_USERS': False,
-#     'SERIALIZERS': {
-#         'user_create': 'api.serializers.CustomUserCreateSerializer',
-#         'current_user': 'api.serializers.CustomUserSerializer',
-#         'user': 'api.serializers.CustomUserSerializer',
-#     },
-#     'PERMISSIONS': {
-#         'user_list': ['rest_framework.permissions.AllowAny'],
-#         'user': ['rest_framework.permissions.IsAuthenticated']
-#     }
-# }
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'SERIALIZERS': {
+        # Сериализатор для пользователей
+        'user': 'api.serializers.UserSerializer',
+        # Сериализатор для создания пользователей
+        'user_create': 'api.serializers.UserCreateSerializer',
+        # Сериализатор для текущего пользователя
+        'current_user': 'api.serializers.UserSerializer',
+    },
+    'PERMISSIONS': {
+        # Права доступа для авторизованных пользователей
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+        # Права доступа для всех пользователей
+        'user_list': ['rest_framework.permissions.AllowAny']
+    }
+}
