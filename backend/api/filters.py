@@ -8,8 +8,6 @@ CHOICES_LIST = (
 
 
 class FilterForRecipes(rest_framework.FilterSet):
-    """Кастомная фильтрация для рецептов."""
-
     is_favorited = rest_framework.ChoiceFilter(
         method='is_favorited_method',
         choices=CHOICES_LIST
@@ -57,8 +55,6 @@ class FilterForRecipes(rest_framework.FilterSet):
 
 
 class FilterForIngredients(rest_framework.FilterSet):
-    """Кастомная фильтрация для ингредиентов."""
-
     name = rest_framework.CharFilter(lookup_expr='istartswith')
 
     class Meta:
