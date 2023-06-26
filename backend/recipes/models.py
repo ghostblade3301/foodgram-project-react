@@ -26,7 +26,6 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    """Тэги рецептов"""
     name = models.CharField(
         max_length=200,
         verbose_name='Тэг',
@@ -56,7 +55,6 @@ class Tag(models.Model):
 
 
 class Recipe(models.Model):
-    """Рецепт"""
     name = models.CharField(
         max_length=200,
         verbose_name='Название рецепта',
