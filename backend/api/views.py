@@ -1,9 +1,12 @@
 from api.filters import FilterForIngredients, FilterForRecipes
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import (AmountIngredient, Favorite, Ingredient, Recipe,
+                            ShoppingCart, Tag)
 from rest_framework import exceptions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -143,6 +146,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
     filter_backends = [DjangoFilterBackend]
     filterset_class = FilterForRecipes
 
+    # Определяем, какой сериализатор использовать в зависимости от действия
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
             # Сериализатор для просмотра списка и конкретного рецепта
@@ -150,6 +154,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
         # Сериализатор для создания и изменения рецепта
         return PostRecipeSerializer
 
+    # Добавляем действие "favorite" для добавления рецепта в избранное
     @action(detail=True, methods=('POST', 'DELETE'),
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
@@ -162,8 +167,10 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
             return self.delete_method(Favorite, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    # Добавляем действие "shopping_cart" для добавления рецепта в корзину
     @action(detail=True, methods=('POST', 'DELETE'),
             permission_classes=[IsAuthenticated])
+    # Определяем post или delete
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
             error_message = 'Recipe is already in shopping cart.'
@@ -172,3 +179,41 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
             error_message = 'Recipe is not in shopping cart.'
             return self.delete_method(ShoppingCart, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # Добавляем действие "download_shopping_cart" для скачивания списка покупок
+    @action(
+        detail=False,
+        methods=['GET'],
+        permission_classes=[IsAuthenticated]
+    )
+    def download_shopping_cart(self, request):
+        # Получаем список рецептов в корзине пользователя
+        shopping_cart = ShoppingCart.objects.filter(user=request.user)
+        # Получаем id рецептов из списка покупок
+        recipes_id = [purchase.recipe.id for purchase in shopping_cart]
+        # Получаем ингредиенты и их количество для рецептов из списка покупок
+        ingredients = (AmountIngredient.objects.filter(
+            recipe__in=recipes_id).values(
+                'ingredient__name',
+                'ingredient__measurement_unit').annotate(amount=Sum('amount')))
+        # Создаем заголовок для списка покупок
+        shopping_list_final = 'Список покупок\n'
+        # Добавляем в список каждый ингредиент с его количеством и
+        # единицами измерения
+        for item in ingredients:
+            ingredient_name = item['ingredient__name']
+            measurement_unit = item['ingredient__measurement_unit']
+            amount = item['amount']
+            shopping_list_final += (
+                f'{ingredient_name} '
+                f'({measurement_unit}) {amount}\n'
+            )
+        # Задаем имя файла для скачивания
+        filename = 'shopping_list.txt'
+        response = HttpResponse(
+            shopping_list_final[:-1],
+            content_type='text/plain',
+        )
+        response['Content-Disposition'] = ('attachment; filename={0}'
+                                           .format(filename))
+        return response
