@@ -123,7 +123,10 @@ class AmountIngredient(models.Model):
     )
 
     def __str__(self):
-        return f'{self.ingredient.name} - {self.amount} {self.ingredient.measurement_unit}'
+        return (
+            f'{self.ingredient.name} - {self.amount} '
+            f'{self.ingredient.measurement_unit}'
+        )
 
 
 class Favorite(models.Model):
@@ -151,7 +154,10 @@ class Favorite(models.Model):
         ]
 
     def __str__(self):
-        return f'Favorite: Пользователь {self.user.username}, рецепт {self.recipe.name}'
+        return (
+            f'Favorite: Пользователь {self.user.username}, '
+            f'рецепт {self.recipe.name}'
+        )
 
 
 class ShoppingCart(models.Model):
@@ -179,4 +185,7 @@ class ShoppingCart(models.Model):
         ]
 
     def __str__(self):
-        return f'ShoppingCart: Пользователь {self.user.username}, рецепт {self.recipe.name}'
+        return (
+            f'ShoppingCart: Пользователь {self.user.username}, '
+            f'рецепт {self.recipe.name}'
+        )
