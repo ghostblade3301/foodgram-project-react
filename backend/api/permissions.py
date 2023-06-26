@@ -10,7 +10,7 @@ class IsAuthorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS or request.method == 'POST':
             return True
-        elif (request.method in ['DELETE', 'PATCH'] and
-              request.user == obj.author):
+        elif (request.method in
+              ['DELETE', 'PATCH'] and request.user == obj.author):
             return True
         return False
