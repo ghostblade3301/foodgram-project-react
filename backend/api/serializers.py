@@ -92,7 +92,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     # Методы для получения значений полей
     def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj).count()
+        return obj.recipes.count()
 
     # Проверяем аутентифицирован ли юзер и существует ли
     # объект подписки между юзером и автором
