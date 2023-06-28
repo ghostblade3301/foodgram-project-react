@@ -73,27 +73,16 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 # Сериализатор для получения ингредиента в рецепте
 class GetIngredientInRecipeSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField()
-    id = serializers.SerializerMethodField()
-    measurement_unit = serializers.SerializerMethodField()
-    amount = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField(source='ingredient.name')
+    id = serializers.SerializerMethodField(source='ingredient.id')
+    amount = serializers.SerializerMethodField(source='amount')
+    measurement_unit = serializers.SerializerMethodField(
+        source='ingredient.measurement_unit'
+    )
 
     class Meta:
         model = AmountIngredient
         fields = ('id', 'name', 'measurement_unit', 'amount')
-
-    # Методы для получения значений полей
-    def get_name(self, obj):
-        return obj.ingredient.name
-
-    def get_id(self, obj):
-        return obj.ingredient.id
-
-    def get_measurement_unit(self, obj):
-        return obj.ingredient.measurement_unit
-
-    def get_amount(self, obj):
-        return obj.amount
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
