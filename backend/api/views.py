@@ -1,17 +1,18 @@
-from api.filters import FilterForIngredients, FilterForRecipes
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (AmountIngredient, Favorite, Ingredient, Recipe,
-                            ShoppingCart, Tag)
 from rest_framework import exceptions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
+from api.filters import FilterForIngredients, FilterForRecipes
+from recipes.models import (AmountIngredient, Favorite, Ingredient, Recipe,
+                            ShoppingCart, Tag)
 from users.models import Follow
 
 from .mixins import ListRetrieveMixin
@@ -21,6 +22,7 @@ from .serializers import (GetRecipeSerializer, IngredientSerializer,
                           PostRecipeSerializer, ShortRecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
                           UserSerializer)
+
 
 User = get_user_model()
 
@@ -69,9 +71,7 @@ class UserViewSet(UserViewSet):
         serializer_class=SubscriptionSerializer
     )
     def subscribe(self, request, id=None):
-        # Текущий пользователь
         user = request.user
-        # Автор на которого подписываются
         author = get_object_or_404(User, pk=id)
         # Поиск подписки пользователя на автора
         follow_search = Follow.objects.filter(user=user, author=author)
@@ -87,12 +87,13 @@ class UserViewSet(UserViewSet):
     def create_subscription(self, user, author, follow_search):
         # Если пользователь пытается подписаться на самого себя
         if user == author:
-            raise exceptions.ValidationError('Cannot subscribe to yourself')
+            raise exceptions.ValidationError(
+                'Нельзя подписаться на самого себя')
         # Если подписка уже существует
         if follow_search.exists():
             # Выводим ошибку
             raise exceptions.ValidationError(
-                'You are already subscribed to this user.')
+                'Вы уже подписались на этого пользователя')
         # Создание подписки
         Follow.objects.create(user=user, author=author)
         serializer = self.get_serializer(author)
@@ -103,7 +104,7 @@ class UserViewSet(UserViewSet):
         # Если подписка не существует
         if not follow_search.exists():
             raise exceptions.ValidationError(
-                'You are not subscribed to this user yet.')
+                'Вы еще не подписаны на этого пользователя')
         # Удаление подписки
         Follow.objects.filter(user=user, author=author).delete()
         # Возвращение ответа без содержания (204 No Content)
@@ -159,11 +160,11 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
         if request.method == 'POST':
-            error_message = 'Recipe is already in favorites.'
+            error_message = 'Рецепт уже в избранном'
             return self.create_method(Favorite, pk, request, error_message)
 
         elif request.method == 'DELETE':
-            error_message = 'Recipe is not in favorites.'
+            error_message = 'Рецепт не в избранном'
             return self.delete_method(Favorite, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -173,10 +174,10 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
     # Определяем post или delete
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
-            error_message = 'Recipe is already in shopping cart.'
+            error_message = 'Рецепт уже в корзине'
             return self.create_method(ShoppingCart, pk, request, error_message)
         elif request.method == 'DELETE':
-            error_message = 'Recipe is not in shopping cart.'
+            error_message = 'Рецепта нет в корзине'
             return self.delete_method(ShoppingCart, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

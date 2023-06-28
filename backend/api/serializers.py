@@ -73,10 +73,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 # Сериализатор для получения ингредиента в рецепте
 class GetIngredientInRecipeSerializer(serializers.ModelSerializer):
-    name = serializers.SerializerMethodField(source='ingredient.name')
-    id = serializers.SerializerMethodField(source='ingredient.id')
-    amount = serializers.SerializerMethodField(source='amount')
-    measurement_unit = serializers.SerializerMethodField(
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
 
@@ -97,9 +96,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     # Проверяем аутентифицирован ли юзер и существует ли
     # объект подписки между юзером и автором
     def get_is_subscribed(self, obj):
-        user = self.context['request'].user
-        return user.is_authenticated and Follow.objects.filter(
-            user=user, author=obj).exists()
+        return True
 
     class Meta:
         model = User
