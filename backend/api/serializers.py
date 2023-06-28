@@ -185,19 +185,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
                 'Минимальное время готовки 1 минута')
         return cooking_time
 
-    # Создание и обновление рецепта
-    def create(self, validated_data):
-        # Получение автора рецепта из контекста запроса
-        author = self.context.get('request').user
-        # Извлечение тегов и ингредиентов из валидированных данных
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        # Создание объекта рецепта и присвоение тегов
-        recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.tags.set(tags)
-        # Создание связей между рецептом и ингредиентами
+    def create_ingredients(self, ingredients, recipe):
         recipe_ingredients = []
-
         for ingredient in ingredients:
             amount = ingredient['amount']
             ingredient_instance = ingredient['id']
@@ -211,6 +200,19 @@ class PostRecipeSerializer(serializers.ModelSerializer):
                 )
             )
         AmountIngredient.objects.bulk_create(recipe_ingredients)
+
+    # Создание и обновление рецепта
+    def create(self, validated_data):
+        # Получение автора рецепта из контекста запроса
+        author = self.context.get('request').user
+        # Извлечение тегов и ингредиентов из валидированных данных
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        # Создание объекта рецепта и присвоение тегов
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.tags.set(tags)
+        # Создание связей между рецептом и ингредиентами
+        self.create_ingredients(ingredients, recipe)
         return recipe
 
     def update(self, instance, validated_data):
@@ -222,18 +224,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients', None)
         if ingredients is not None:
             instance.ingredients.clear()
+            self.create_ingredients(ingredients, instance)
 
-            for ingredient in ingredients:
-                amount = ingredient['amount']
-                ingredient_instance = ingredient['id']
-                ingredient = (get_object_or_404(Ingredient,
-                                                pk=ingredient_instance))
-
-                AmountIngredient.objects.update_or_create(
-                    recipe=instance,
-                    ingredient=ingredient,
-                    amount=amount
-                )
         # Вызов стандартного метода обновления для остальных полей
         return super().update(instance, validated_data)
 
