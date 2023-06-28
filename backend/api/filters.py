@@ -1,4 +1,5 @@
 from django_filters import rest_framework
+
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 
 CHOICES_LIST = (
