@@ -108,8 +108,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
                   "recipes", 'recipes_count')
 
 
-# Сериализатор для получения рецепта
 class GetRecipeSerializer(serializers.ModelSerializer):
+    '''Сериализатор для получения рецепта'''
+
     author = UserSerializer(read_only=True)
     tags = TagSerializer(read_only=True, many=True)
     ingredients = serializers.SerializerMethodField(read_only=True)
@@ -143,8 +144,9 @@ class GetRecipeSerializer(serializers.ModelSerializer):
                                         recipe=obj.id).exists())
 
 
-# Сериализатор для создания и обновления рецепта
 class PostRecipeSerializer(serializers.ModelSerializer):
+    '''Сериализатор для создания и обновления рецепта'''
+
     author = UserSerializer(read_only=True)
     ingredients = ShortIngredientSerializerForRecipe(many=True)
     image = Base64ImageField()
@@ -158,27 +160,29 @@ class PostRecipeSerializer(serializers.ModelSerializer):
     def validate_tags(self, tags):
         # Проверка наличия хотя бы одного тега
         if not tags:
-            raise exceptions.ValidationError('There must be at least one tag.')
+            raise exceptions.ValidationError('Должен быть хотя бы один тэг')
         return tags
 
     def validate_ingredients(self, ingredients):
         # Проверка наличия хотя бы одного ингредиента
         if not ingredients:
             raise exceptions.ValidationError(
-                'There must be at least one ingredient.')
+                'Должен быть хотя бы один ингредиент')
         # Проверка на наличие дубликатов ингредиентов
-        ingredients_id_list = [ingredient['id'] for ingredient in ingredients]
-        for ingredient_id in ingredients_id_list:
-            if ingredients_id_list.count(ingredient_id) > 1:
-                raise exceptions.ValidationError(
-                    'A recipe cannot have two identical ingredients.')
+        ingredients_id_set = set(
+            [ingredient['id'] for ingredient in ingredients]
+        )
+        if len(ingredients_id_set) != len(ingredients):
+            raise exceptions.ValidationError(
+                'Рецепт не может иметь двух одинаковых ингредиентов'
+            )
         return ingredients
 
     def validate_cooking_time(self, cooking_time):
         # Проверка минимального времени приготовления
         if cooking_time <= 0:
             raise exceptions.ValidationError(
-                'The minimum cooking time is 1 minute.')
+                'Минимальное время готовки 1 минута')
         return cooking_time
 
     # Создание и обновление рецепта
