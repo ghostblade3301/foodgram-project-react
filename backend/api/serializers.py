@@ -124,8 +124,7 @@ class GetRecipeSerializer(serializers.ModelSerializer):
 
     # Методы для получения значений полей
     def get_ingredients(self, obj):
-        recipe = obj
-        ingredients = AmountIngredient.objects.filter(recipe=recipe)
+        ingredients = AmountIngredient.objects.filter(recipe=obj)
         serializer = GetIngredientInRecipeSerializer(ingredients, many=True)
         return serializer.data
 
