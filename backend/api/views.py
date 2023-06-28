@@ -18,6 +18,7 @@ from users.models import Follow
 from .mixins import ListRetrieveMixin
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
+from .utils import create_ingredient_list
 from .serializers import (GetRecipeSerializer, IngredientSerializer,
                           PostRecipeSerializer, ShortRecipeSerializer,
                           SubscriptionSerializer, TagSerializer,
@@ -54,15 +55,10 @@ class UserViewSet(UserViewSet):
     def subscriptions(self, request):
         user = request.user
         # Получение всех подписок пользователя
-        favorites = user.followers.all()
-        # Получение ID авторов подписок
-        users_id = [favorite.author.id for favorite in favorites]
-        # Получение всех пользователей по ID
-        users = User.objects.filter(id__in=users_id)
-        # Пагинация пользователей
-        paginated_queryset = self.paginate_queryset(users)
-        serializer = self.serializer_class(paginated_queryset, many=True)
-        # Возвращение ответа с пагинацией
+        queryset = User.objects.filter(followings__user=user)
+        # Разбиение результатов на страницы
+        pages = self.paginate_queryset(queryset)
+        serializer = self.serializer_class(pages, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     @action(
@@ -188,28 +184,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
         permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        # Получаем список рецептов в корзине пользователя
-        shopping_cart = ShoppingCart.objects.filter(user=request.user)
-        # Получаем id рецептов из списка покупок
-        recipes_id = [purchase.recipe.id for purchase in shopping_cart]
-        # Получаем ингредиенты и их количество для рецептов из списка покупок
-        ingredients = (AmountIngredient.objects.filter(
-            recipe__in=recipes_id).values(
-                'ingredient__name',
-                'ingredient__measurement_unit').annotate(amount=Sum('amount')))
-        # Создаем заголовок для списка покупок
-        shopping_list_final = 'Список покупок\n'
-        # Добавляем в список каждый ингредиент с его количеством и
-        # единицами измерения
-        for item in ingredients:
-            ingredient_name = item['ingredient__name']
-            measurement_unit = item['ingredient__measurement_unit']
-            amount = item['amount']
-            shopping_list_final += (
-                f'{ingredient_name} '
-                f'({measurement_unit}) {amount}\n'
-            )
-        # Задаем имя файла для скачивания
+        shopping_list_final = create_ingredient_list(request.user)
         filename = 'shopping_list.txt'
         response = HttpResponse(
             shopping_list_final[:-1],
