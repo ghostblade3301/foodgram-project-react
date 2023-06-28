@@ -6,10 +6,10 @@ from .views import IngredientViewSet, RecipeViewSet, TagViewSet, UserViewSet
 app_name = 'api'
 
 router = routers.DefaultRouter()
-router.register(r'tags', TagViewSet)
-router.register(r'recipes', RecipeViewSet)
-router.register(r'users', UserViewSet)
-router.register(r'ingredients', IngredientViewSet)
+router.register('tags', TagViewSet)
+router.register('recipes', RecipeViewSet)
+router.register('users', UserViewSet)
+router.register('ingredients', IngredientViewSet)
 
 
 urlpatterns = [
