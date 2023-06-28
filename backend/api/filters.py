@@ -2,20 +2,13 @@ from django_filters import rest_framework
 
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 
-CHOICES_LIST = (
-    ('0', 'False'),
-    ('1', 'True')
-)
-
 
 class FilterForRecipes(rest_framework.FilterSet):
-    is_favorited = rest_framework.ChoiceFilter(
+    is_favorited = rest_framework.BooleanFilter(
         method='is_favorited_method',
-        choices=CHOICES_LIST
     )
-    is_in_shopping_cart = rest_framework.ChoiceFilter(
+    is_in_shopping_cart = rest_framework.BooleanFilter(
         method='is_in_shopping_cart_method',
-        choices=CHOICES_LIST
     )
     author = rest_framework.NumberFilter(
         field_name='author',
@@ -33,22 +26,20 @@ class FilterForRecipes(rest_framework.FilterSet):
 
         favorites = (Favorite.objects.filter(user=self.request.user).
                      values_list('recipe_id', flat=True))
-        if value == '1':
+        if value :
             return queryset.filter(id__in=favorites)
-        if value == '0':
+        else:
             return queryset.exclude(id__in=favorites)
-        return queryset
 
     def is_in_shopping_cart_method(self, queryset, name, value):
         if self.request.user.is_anonymous:
             return Recipe.objects.none()
         shopping_cart = (ShoppingCart.objects.filter(user=self.request.user).
                          values_list('recipe_id', flat=True))
-        if value == '1':
+        if value:
             return queryset.filter(id__in=shopping_cart)
-        if value == '0':
+        else:
             return queryset.exclude(id__in=shopping_cart)
-        return queryset
 
     class Meta:
         model = Recipe
