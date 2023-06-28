@@ -94,8 +94,12 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
 
+    # Проверяем аутентифицирован ли юзер и существует ли
+    # объект подписки между юзером и автором
     def get_is_subscribed(self, obj):
-        return True
+        user = self.context['request'].user
+        return user.is_authenticated and Follow.objects.filter(
+            user=user, author=obj).exists()
 
     class Meta:
         model = User
