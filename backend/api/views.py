@@ -13,7 +13,6 @@ from api.filters import FilterForIngredients, FilterForRecipes
 from recipes.models import (Favorite, Ingredient, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow
-
 from .mixins import ListRetrieveMixin
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
@@ -159,7 +158,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
             error_message = 'Рецепт уже в избранном'
             return self.create_method(Favorite, pk, request, error_message)
 
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             error_message = 'Рецепт не в избранном'
             return self.delete_method(Favorite, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -172,7 +171,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
         if request.method == 'POST':
             error_message = 'Рецепт уже в корзине'
             return self.create_method(ShoppingCart, pk, request, error_message)
-        elif request.method == 'DELETE':
+        if request.method == 'DELETE':
             error_message = 'Рецепта нет в корзине'
             return self.delete_method(ShoppingCart, pk, request, error_message)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -187,7 +186,7 @@ class RecipeViewSet(ModelViewSet, FavoriteShoppingCart):
         shopping_list_final = create_ingredient_list(request.user)
         filename = 'shopping_list.txt'
         response = HttpResponse(
-            shopping_list_final[:-1],
+            shopping_list_final,
             content_type='text/plain',
         )
         response['Content-Disposition'] = ('attachment; filename={0}'

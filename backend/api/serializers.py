@@ -189,8 +189,8 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         recipe_ingredients = []
         for ingredient in ingredients:
             amount = ingredient['amount']
-            ingredient_instance = ingredient['id']
-            ingredient = get_object_or_404(Ingredient, pk=ingredient_instance)
+            ingredient_id = ingredient['id']
+            ingredient = get_object_or_404(Ingredient, pk=ingredient_id)
 
             recipe_ingredients.append(
                 AmountIngredient(

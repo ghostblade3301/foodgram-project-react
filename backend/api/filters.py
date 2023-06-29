@@ -28,8 +28,7 @@ class FilterForRecipes(rest_framework.FilterSet):
                      values_list('recipe_id', flat=True))
         if value:
             return queryset.filter(id__in=favorites)
-        else:
-            return queryset.exclude(id__in=favorites)
+        return queryset.exclude(id__in=favorites)
 
     def is_in_shopping_cart_method(self, queryset, name, value):
         if self.request.user.is_anonymous:
@@ -38,8 +37,7 @@ class FilterForRecipes(rest_framework.FilterSet):
                          values_list('recipe_id', flat=True))
         if value:
             return queryset.filter(id__in=shopping_cart)
-        else:
-            return queryset.exclude(id__in=shopping_cart)
+        return queryset.exclude(id__in=shopping_cart)
 
     class Meta:
         model = Recipe
