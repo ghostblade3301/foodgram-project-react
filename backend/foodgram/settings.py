@@ -163,3 +163,10 @@ DJOSER = {
 }
 
 PAGE_SIZE = 6
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://yc-foodgram.ddns.net/',
+    'http://130.193.34.125/',
+    'http://localhost',
+    'http://localhost:8000',
+]
