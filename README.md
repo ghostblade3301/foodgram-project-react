@@ -11,6 +11,10 @@ Foodgram - это социальная сеть для любителей вку
 - React
 ## Где можно посмотреть пример?
 ### https://yc-foodgram.ddns.net
+Для ревьюера:
+login - admin@admin.com
+password - admin
+
 ## Инструкция по установке для локального запуска
 Для начала установим docker и docker compose. Лучше всего это делать через документацию с официального сайта: 
 https://docs.docker.com/engine/install/
