@@ -95,10 +95,10 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        # Если запрос не существует или пользователь анонимный 
+        # Если запрос не существует или пользователь анонимный
         if request is None or request.user.is_anonymous:
             return False
-        # Проверяем, существует ли подписка пользователя на данного автора 
+        # Проверяем, существует ли подписка пользователя на данного автора
         return Follow.objects.filter(user=request.user, author=obj.id).exists()
 
     class Meta:

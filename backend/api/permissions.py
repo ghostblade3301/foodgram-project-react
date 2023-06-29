@@ -9,7 +9,7 @@ class IsAuthorOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.method in SAFE_METHODS or request.method == 'POST' or
-            (request.method in ['DELETE', 'PATCH'] and
-             request.user == obj.author)
+            request.method in SAFE_METHODS or request.method == 'POST'
+            or (request.method in ['DELETE', 'PATCH']
+                and request.user == obj.author)
         )

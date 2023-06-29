@@ -26,7 +26,7 @@ class FilterForRecipes(rest_framework.FilterSet):
 
         favorites = (Favorite.objects.filter(user=self.request.user).
                      values_list('recipe_id', flat=True))
-        if value :
+        if value:
             return queryset.filter(id__in=favorites)
         else:
             return queryset.exclude(id__in=favorites)

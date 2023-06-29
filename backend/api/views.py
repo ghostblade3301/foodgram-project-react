@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from api.filters import FilterForIngredients, FilterForRecipes
-from recipes.models import (AmountIngredient, Favorite, Ingredient, Recipe,
+from recipes.models import (Favorite, Ingredient, Recipe,
                             ShoppingCart, Tag)
 from users.models import Follow
 
@@ -58,7 +58,8 @@ class UserViewSet(UserViewSet):
         queryset = User.objects.filter(followings__user=user)
         # Разбиение результатов на страницы
         pages = self.paginate_queryset(queryset)
-        serializer = self.serializer_class(pages, many=True, context={'request': request})
+        serializer = self.serializer_class(
+            pages, many=True, context={'request': request})
         return self.get_paginated_response(serializer.data)
 
     @action(
