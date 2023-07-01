@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.forms import ValidationError
 
 User = get_user_model()
 
@@ -90,6 +91,11 @@ class Recipe(models.Model):
         verbose_name='Ингредиенты',
         related_name='recipes',
         through='recipes.AmountIngredient',
+        validators=[
+            MinValueValidator(
+                1, message='Минимальное кол-во ингредиентов 1'
+            )
+        ]
     )
     tags = models.ManyToManyField(
         Tag,
@@ -108,6 +114,12 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.ingredients.exists():
+            raise ValidationError(
+                'Рецепт должен содержать хотя бы один ингредиент')
+        super().save(*args, **kwargs)
 
 
 class AmountIngredient(models.Model):
@@ -137,6 +149,16 @@ class AmountIngredient(models.Model):
             f'{self.ingredient.name} - {self.amount} '
             f'{self.ingredient.measurement_unit}'
         )
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Количество ингредиентов'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('ingredient', 'recipe',),
+                name='recipe_ingredient_constraint'
+            )
+        ]
 
 
 class Favorite(models.Model):

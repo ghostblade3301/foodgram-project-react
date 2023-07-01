@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from .models import Favorite, Ingredient, Recipe, ShoppingCart, Tag, AmountIngredient
+from .forms import RecipeForm
+
+
+class AmountIngredientInline(admin.TabularInline):
+    model = AmountIngredient
+    extra = 1
 
 
 @admin.register(Ingredient)
@@ -32,9 +38,10 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'cooking_time',
     )
+    form = RecipeForm
     list_filter = ('author__email', 'tags', 'name')
     search_fields = ('author__email', 'name',)
-
+    inlines = [AmountIngredientInline]
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):

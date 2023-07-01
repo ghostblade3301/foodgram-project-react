@@ -166,16 +166,22 @@ class PostRecipeSerializer(serializers.ModelSerializer):
     def validate_ingredients(self, ingredients):
         # Проверка наличия хотя бы одного ингредиента
         if not ingredients:
-            raise exceptions.ValidationError(
+            raise serializers.ValidationError(
                 'Должен быть хотя бы один ингредиент')
         # Проверка на наличие дубликатов ингредиентов
         ingredients_id_set = set(
             [ingredient['id'] for ingredient in ingredients]
         )
         if len(ingredients_id_set) != len(ingredients):
-            raise exceptions.ValidationError(
+            raise serializers.ValidationError(
                 'Рецепт не может иметь двух одинаковых ингредиентов'
             )
+        # Проверка, что количество каждого ингредиента больше 0
+        for ingredient in ingredients:
+            if ingredient['amount'] < 1:
+                raise serializers.ValidationError(
+                    'Количество каждого ингредиента должно быть больше 0'
+                )
         return ingredients
 
     def validate_cooking_time(self, cooking_time):
