@@ -44,6 +44,7 @@ class RecipeAdmin(admin.ModelAdmin):
     search_fields = ('author__email', 'name',)
     inlines = [AmountIngredientInline]
 
+
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = (
