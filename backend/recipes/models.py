@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.forms import ValidationError
+
 
 User = get_user_model()
 
@@ -114,12 +114,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.ingredients.exists():
-            raise ValidationError(
-                'Рецепт должен содержать хотя бы один ингредиент')
-        super().save(*args, **kwargs)
 
 
 class AmountIngredient(models.Model):
