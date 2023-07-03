@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from .forms import RecipeForm
 from .models import (Favorite, Ingredient, Recipe,
                      ShoppingCart, Tag, AmountIngredient)
 
@@ -8,6 +7,7 @@ from .models import (Favorite, Ingredient, Recipe,
 class AmountIngredientInline(admin.TabularInline):
     model = AmountIngredient
     extra = 1
+    min_num = 1
 
 
 @admin.register(Ingredient)
@@ -39,7 +39,6 @@ class RecipeAdmin(admin.ModelAdmin):
         'text',
         'cooking_time',
     )
-    form = RecipeForm
     list_filter = ('author__email', 'tags', 'name')
     search_fields = ('author__email', 'name',)
     inlines = [AmountIngredientInline]
